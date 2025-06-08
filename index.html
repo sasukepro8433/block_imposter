@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Block Impostors</title>
+<link rel="shortcut icon" href="logo.png" type="image/x-icon">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+  
+  body {
+    margin: 0;
+    background-color: #0b0b0b;
+    font-family: 'Press Start 2P', cursive;
+    color: white;
+    overflow: hidden;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    top:0; left:0; right:0; bottom:0;
+    background-image:
+      linear-gradient(45deg, rgba(255,255,255,0.05) 25%, transparent 25%),
+      linear-gradient(-45deg, rgba(255,255,255,0.05) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.05) 75%),
+      linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.05) 75%);
+    background-size: 40px 40px;
+    background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  #menu {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #1c1c1c;
+    border: 4px solid #555;
+    padding: 30px 60px;
+    text-align: center;
+    box-shadow: 0 0 15px #3af;
+    z-index: 10;
+    width: 320px;
+    user-select: none;
+  }
+
+  #menu h1 {
+    margin: 0 0 30px 0;
+    font-size: 32px;
+    color: #3af;
+    text-shadow: 2px 2px 0 #000;
+  }
+
+  #menu button {
+    display: block;
+    width: 100%;
+    background: #2a2a2a;
+    border: 3px solid #3af;
+    color: #3af;
+    font-size: 14px;
+    padding: 15px 0;
+    margin: 10px 0;
+    cursor: pointer;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 0 #000;
+    transition: background 0.3s, color 0.3s, border-color 0.3s;
+  }
+
+  #menu button:hover {
+    background: #3af;
+    color: #222;
+    border-color: #0af;
+  }
+
+  #menu button:active {
+    background: #1a1a1a;
+    color: #1af;
+    border-color: #09f;
+  }
+
+  #discordLogin {
+    background: #5865F2;
+    border: 3px solid #99aab5;
+    color: white;
+  }
+
+  #discordLogin:hover {
+    background: #4854d4;
+  }
+
+  canvas {
+    display: block;
+    margin: 0 auto;
+    background-color: #333;
+    border: 3px solid #555;
+    position: relative;
+    z-index: 1;
+  }
+
+  #userInfo {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #ccc;
+  }
+</style>
+</head>
+<body>
+
+  <div id="menu">
+    <h1>Block Impostors</h1>
+    <button id="startBtn">Jouer</button>
+    <button id="optionsBtn">Options</button>
+    <button id="discordLogin">Connexion Discord</button>
+    <button id="quitBtn">Quitter</button>
+    <div id="userInfo"></div>
+  </div>
+
+  <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+<script>
+  // === JEU ===
+  const canvas = document.getElementById("gameCanvas");
+  const ctx = canvas.getContext("2d");
+
+  const player = {
+    x: 100,
+    y: 100,
+    speed: 3,
+    image: new Image()
+  };
+
+  player.image.src = "daquavis.png";
+
+  const keys = {};
+  document.addEventListener("keydown", e => keys[e.key] = true);
+  document.addEventListener("keyup", e => keys[e.key] = false);
+
+  function movePlayer() {
+    if (keys["ArrowUp"] || keys["z"]) player.y -= player.speed;
+    if (keys["ArrowDown"] || keys["s"]) player.y += player.speed;
+    if (keys["ArrowLeft"] || keys["q"]) player.x -= player.speed;
+    if (keys["ArrowRight"] || keys["d"]) player.x += player.speed;
+  }
+
+  function gameLoop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    movePlayer();
+    ctx.drawImage(player.image, player.x, player.y, 48, 64);
+    requestAnimationFrame(gameLoop);
+  }
+
+  gameLoop();
+
+  // === MENU ===
+  const menu = document.getElementById('menu');
+  const startBtn = document.getElementById('startBtn');
+  const optionsBtn = document.getElementById('optionsBtn');
+  const quitBtn = document.getElementById('quitBtn');
+
+  startBtn.addEventListener('click', () => {
+    menu.style.display = 'none';
+  });
+
+  optionsBtn.addEventListener('click', () => {
+    alert('Options à venir...');
+  });
+
+  quitBtn.addEventListener('click', () => {
+    alert('Merci d\'avoir joué !');
+  });
+
+  // === CONNEXION DISCORD ===
+  const clientId = "1381020944994144286"; // ⬅️ Remplace ça par ton vrai client ID
+  const redirectUri = window.location.origin + window.location.pathname;
+  const oauthUrl = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=identify`;
+
+  document.getElementById("discordLogin").addEventListener("click", () => {
+    window.location.href = oauthUrl;
+  });
+
+  // Si on revient avec le token dans l'URL
+  window.addEventListener("load", () => {
+    const hash = window.location.hash;
+    if (hash.includes("access_token")) {
+      const params = new URLSearchParams(hash.substring(1));
+      const accessToken = params.get("access_token");
+
+      fetch("https://discord.com/api/users/@me", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      })
+      .then(res => res.json())
+      .then(user => {
+        document.getElementById("userInfo").textContent = `Connecté : ${user.username}#${user.discriminator}`;
+        document.getElementById("discordLogin").style.display = "none";
+      })
+      .catch(err => {
+        console.error("Erreur Discord:", err);
+      });
+    }
+  });
+</script>
+
+</body>
+</html>
