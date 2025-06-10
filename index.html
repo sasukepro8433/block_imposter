@@ -179,14 +179,14 @@ gameLoop();
 function verifierCode() {
   const code = document.getElementById("skinCodeInput").value.trim().toLowerCase();
   const codesSkins = {
-    "bird orange": "birdorange.png",
-    "employe2025": "employe_skin.png",
-    "12345": "dream.png"
+    "bird orange": "devlopeur.png",
+    "1234": "daquavis.png",
+    "12345": "DREAM.png"
   };
 
   if (code === "ttt") {
     const chapeauDev = new Image();
-    chapeauDev.src = "chapeau-dev.png";
+    chapeauDev.src = "ordi de dev chapeau.png";
     player.hatImage = chapeauDev;
     localStorage.setItem("chapeauActuel", "chapeau-dev.png");
     alert("🎩 Chapeau développeur activé !");
