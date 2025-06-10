@@ -7,28 +7,13 @@
 <link rel="shortcut icon" href="logo.png" type="image/x-icon">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-  
+
   body {
     margin: 0;
     background-color: #0b0b0b;
     font-family: 'Press Start 2P', cursive;
     color: white;
     overflow: hidden;
-  }
-
-  body::before {
-    content: "";
-    position: fixed;
-    top:0; left:0; right:0; bottom:0;
-    background-image:
-      linear-gradient(45deg, rgba(255,255,255,0.05) 25%, transparent 25%),
-      linear-gradient(-45deg, rgba(255,255,255,0.05) 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.05) 75%),
-      linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.05) 75%);
-    background-size: 40px 40px;
-    background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
-    pointer-events: none;
-    z-index: 0;
   }
 
   #menu {
@@ -65,29 +50,21 @@
     cursor: pointer;
     letter-spacing: 1px;
     text-shadow: 1px 1px 0 #000;
-    transition: background 0.3s, color 0.3s, border-color 0.3s;
   }
 
-  #menu button:hover {
-    background: #3af;
-    color: #222;
-    border-color: #0af;
-  }
-
-  #menu button:active {
-    background: #1a1a1a;
-    color: #1af;
-    border-color: #09f;
+  #menu input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 12px;
+    text-align: center;
   }
 
   #discordLogin {
     background: #5865F2;
     border: 3px solid #99aab5;
     color: white;
-  }
-
-  #discordLogin:hover {
-    background: #4854d4;
   }
 
   canvas {
@@ -99,110 +76,175 @@
     z-index: 1;
   }
 
-  #userInfo {
-    margin-top: 10px;
+  #argentCounter, #boutique {
     font-size: 12px;
-    color: #ccc;
+    z-index: 20;
+    color: #3af;
+    background: #111;
+    border: 2px solid #3af;
+    padding: 10px;
+  }
+
+  #boutique {
+    display: none;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 260px;
+  }
+
+  #boutique .item {
+    margin: 10px 0;
+    background: #222;
+    padding: 10px;
+    border: 1px solid #555;
+  }
+
+  #boutique .item button {
+    float: right;
+    background: #3af;
+    border: none;
+    color: #000;
+    font-size: 10px;
+    padding: 5px 8px;
+    cursor: pointer;
   }
 </style>
 </head>
 <body>
+<div id="menu">
+  <h1>Block Impostors</h1>
+  <input id="skinCodeInput" placeholder="Code de skin...">
+  <button onclick="verifierCode()">Valider</button>
+  <button id="startBtn">Jouer</button>
+  <button id="optionsBtn">Options</button>
+  <button id="shopBtn">Boutique</button>
+  <button id="discordLogin">Connexion Discord</button>
+  <button id="quitBtn">Quitter</button>
+  <div id="userInfo"></div>
+</div>
 
-  <div id="menu">
-    <h1>Block Impostors</h1>
-    <button id="startBtn">Jouer</button>
-    <button id="optionsBtn">Options</button>
-    <button id="discordLogin">Connexion Discord</button>
-    <button id="quitBtn">Quitter</button>
-    <div id="userInfo"></div>
-  </div>
-
-  <canvas id="gameCanvas" width="800" height="600"></canvas>
-
+<div id="argentCounter">💰 Pièces : <span id="argentValeur">1000</span></div>
+<div id="boutique">
+  <h2>Boutique</h2>
+  <div class="item">👕 Skin Daquavis — Gratuit <button onclick="acheterItem(0)">Acheter</button></div>
+  <div class="item">🦸 Skin Susy — 200 pièces <button onclick="acheterItem(200)">Acheter</button></div>
+  <div class="item">🎩 Chapeau Ultra — 500 pièces <button onclick="acheterItem(500, 'chapeau-ultra.png')">Acheter</button></div>
+  <div class="item">🤠 Chapeau Cowboy — 45 € <button onclick="acheterItem(-1)">Acheter</button></div>
+</div>
+<canvas id="gameCanvas" width="800" height="600"></canvas>
 <script>
-  // === JEU ===
-  const canvas = document.getElementById("gameCanvas");
-  const ctx = canvas.getContext("2d");
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
 
-  const player = {
-    x: 100,
-    y: 100,
-    speed: 3,
-    image: new Image()
+const player = {
+  x: 100,
+  y: 100,
+  speed: 3,
+  image: new Image(),
+  hatImage: null
+};
+
+const keys = {};
+document.addEventListener("keydown", e => keys[e.key] = true);
+document.addEventListener("keyup", e => keys[e.key] = false);
+
+function movePlayer() {
+  if (keys["ArrowUp"] || keys["z"]) player.y -= player.speed;
+  if (keys["ArrowDown"] || keys["s"]) player.y += player.speed;
+  if (keys["ArrowLeft"] || keys["q"]) player.x -= player.speed;
+  if (keys["ArrowRight"] || keys["d"]) player.x += player.speed;
+}
+
+function gameLoop() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  movePlayer();
+  ctx.drawImage(player.image, player.x, player.y, 48, 64);
+  if (player.hatImage) ctx.drawImage(player.hatImage, player.x, player.y - 32, 48, 32);
+  requestAnimationFrame(gameLoop);
+}
+
+const skinSauvegarde = localStorage.getItem("skinActuel");
+if (skinSauvegarde) player.image.src = skinSauvegarde;
+else player.image.src = "daquavis.png";
+
+const chapeauSauvegarde = localStorage.getItem("chapeauActuel");
+if (chapeauSauvegarde) {
+  player.hatImage = new Image();
+  player.hatImage.src = chapeauSauvegarde;
+}
+
+gameLoop();
+
+function verifierCode() {
+  const code = document.getElementById("skinCodeInput").value.trim().toLowerCase();
+  const codesSkins = {
+    "bird orange": "birdorange.png",
+    "employe2025": "employe_skin.png",
+    "12345": "dream.png"
   };
 
-  player.image.src = "daquavis.png";
-
-  const keys = {};
-  document.addEventListener("keydown", e => keys[e.key] = true);
-  document.addEventListener("keyup", e => keys[e.key] = false);
-
-  function movePlayer() {
-    if (keys["ArrowUp"] || keys["z"]) player.y -= player.speed;
-    if (keys["ArrowDown"] || keys["s"]) player.y += player.speed;
-    if (keys["ArrowLeft"] || keys["q"]) player.x -= player.speed;
-    if (keys["ArrowRight"] || keys["d"]) player.x += player.speed;
+  if (code === "ttt") {
+    const chapeauDev = new Image();
+    chapeauDev.src = "chapeau-dev.png";
+    player.hatImage = chapeauDev;
+    localStorage.setItem("chapeauActuel", "chapeau-dev.png");
+    alert("🎩 Chapeau développeur activé !");
+    return;
   }
 
-  function gameLoop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    movePlayer();
-    ctx.drawImage(player.image, player.x, player.y, 48, 64);
-    requestAnimationFrame(gameLoop);
+  if (codesSkins[code]) {
+    player.image.src = codesSkins[code];
+    localStorage.setItem("skinActuel", codesSkins[code]);
+    alert("✅ Skin activé !");
+  } else {
+    alert("❌ Code inconnu.");
   }
+}
 
-  gameLoop();
+const menu = document.getElementById('menu');
+const startBtn = document.getElementById('startBtn');
+const shopBtn = document.getElementById('shopBtn');
+const quitBtn = document.getElementById('quitBtn');
+const boutique = document.getElementById('boutique');
 
-  // === MENU ===
-  const menu = document.getElementById('menu');
-  const startBtn = document.getElementById('startBtn');
-  const optionsBtn = document.getElementById('optionsBtn');
-  const quitBtn = document.getElementById('quitBtn');
+startBtn.onclick = () => menu.style.display = 'none';
+shopBtn.onclick = () => boutique.style.display = boutique.style.display === 'none' ? 'block' : 'none';
+quitBtn.onclick = () => alert("Merci d'avoir joué !");
 
-  startBtn.addEventListener('click', () => {
-    menu.style.display = 'none';
-  });
-
-  optionsBtn.addEventListener('click', () => {
-    alert('Options à venir...');
-  });
-
-  quitBtn.addEventListener('click', () => {
-    alert('Merci d\'avoir joué !');
-  });
-
-  // === CONNEXION DISCORD ===
-  const clientId = "1381020944994144286"; // ⬅️ Remplace ça par ton vrai client ID
+document.getElementById("discordLogin").onclick = () => {
+  const clientId = "1381020944994144286";
   const redirectUri = window.location.origin + window.location.pathname;
   const oauthUrl = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=identify`;
+  window.location.href = oauthUrl;
+};
 
-  document.getElementById("discordLogin").addEventListener("click", () => {
-    window.location.href = oauthUrl;
-  });
+let argent = 1000;
+function majArgent() {
+  document.getElementById("argentValeur").textContent = argent;
+}
 
-  // Si on revient avec le token dans l'URL
-  window.addEventListener("load", () => {
-    const hash = window.location.hash;
-    if (hash.includes("access_token")) {
-      const params = new URLSearchParams(hash.substring(1));
-      const accessToken = params.get("access_token");
-
-      fetch("https://discord.com/api/users/@me", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      })
-      .then(res => res.json())
-      .then(user => {
-        document.getElementById("userInfo").textContent = `Connecté : ${user.username}#${user.discriminator}`;
-        document.getElementById("discordLogin").style.display = "none";
-      })
-      .catch(err => {
-        console.error("Erreur Discord:", err);
-      });
+function acheterItem(prix, chapeauPath) {
+  if (prix === -1) {
+    alert("Cet objet doit être acheté en dehors du jeu.");
+    return;
+  }
+  if (argent >= prix) {
+    argent -= prix;
+    majArgent();
+    alert("Achat effectué !");
+    if (chapeauPath) {
+      player.hatImage = new Image();
+      player.hatImage.src = chapeauPath;
+      localStorage.setItem("chapeauActuel", chapeauPath);
     }
-  });
-</script>
+  } else {
+    alert("Pas assez de pièces !");
+  }
+}
 
+majArgent();
+</script>
 </body>
 </html>
+
