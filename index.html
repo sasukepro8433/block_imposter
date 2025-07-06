@@ -1,10 +1,8 @@
-</body>
-</html> le code a vec qoi changé:<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <title>kingo</title>
-  <link rel="shortcut icon" href="le logo kingo.png" type="image/x-icon">
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <style>
@@ -90,7 +88,7 @@
         .then(snapshot => {
           if (snapshot.exists()) {
             const data = snapshot.val();
-            result.innerText = ✅ Appareil trouvé :\nID : ${data.id}\nEnregistré le : ${data.timestamp}\nNavigateur : ${data.userAgent};
+            result.innerText = `✅ Appareil trouvé :\nID : ${data.id}\nEnregistré le : ${data.timestamp}\nNavigateur : ${data.userAgent}`;
           } else {
             result.innerText = "❌ Aucun appareil trouvé avec cet ID.";
           }
