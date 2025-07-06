@@ -1,424 +1,105 @@
-<!DOCTYPE html>
-<html lang="en">
+</body>
+</html> le code a vec qoi changé:<!DOCTYPE html>
+<html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Block Impostors</title>
-<link rel="shortcut icon" href="logo.png" type="image/x-icon">
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
-  body {
-    margin: 0;
-    background-color: #0b0b0b;
-    font-family: 'Press Start 2P', cursive;
-    color: white;
-    overflow: hidden;
-  }
-
-  body::before {
-    content: "";
-    position: fixed;
-    top:0; left:0; right:0; bottom:0;
-    background-image:
-      linear-gradient(45deg, rgba(255,255,255,0.05) 25%, transparent 25%),
-      linear-gradient(-45deg, rgba(255,255,255,0.05) 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.05) 75%),
-      linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.05) 75%);
-    background-size: 40px 40px;
-    background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  #menu {
-    position: fixed;
-    top: 50%;
-@@ -50,15 +65,19 @@
-    cursor: pointer;
-    letter-spacing: 1px;
-    text-shadow: 1px 1px 0 #000;
-    transition: background 0.3s, color 0.3s, border-color 0.3s;
-  }
-
-  #menu input {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    font-family: 'Press Start 2P', cursive;
-    font-size: 12px;
-    text-align: center;
-  #menu button:hover {
-    background: #3af;
-    color: #222;
-    border-color: #0af;
-  }
-
-  #menu button:active {
-    background: #1a1a1a;
-    color: #1af;
-    border-color: #09f;
-  }
-
-  #discordLogin {
-@@ -67,6 +86,10 @@
-    color: white;
-  }
-
-  #discordLogin:hover {
-    background: #4854d4;
-  }
-
-  canvas {
-    display: block;
-    margin: 0 auto;
-@@ -76,27 +99,37 @@
-    z-index: 1;
-  }
-
-  #argentCounter, #boutique {
-  #userInfo {
-    margin-top: 10px;
-    font-size: 12px;
-    z-index: 20;
-    color: #3af;
-    background: #111;
-    border: 2px solid #3af;
-    padding: 10px;
-    color: #ccc;
-  }
-
-  #boutique {
-    display: none;
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    width: 260px;
-    background: #111;
-    border: 3px solid #3af;
-    padding: 20px;
-    width: 240px;
-    box-shadow: 0 0 10px #3af;
-    font-size: 12px;
-    text-align: left;
-    z-index: 15;
-    display: none;
-  }
-
-  #boutique h2 {
-    margin-top: 0;
-    font-size: 14px;
-    color: #3af;
-  }
-
-  #boutique .item {
-    margin: 10px 0;
-    background: #222;
-    padding: 10px;
-    background: #222;
-    border: 1px solid #555;
-  }
-
-@@ -108,143 +141,206 @@
-    font-size: 10px;
-    padding: 5px 8px;
-    cursor: pointer;
-    margin-left: 10px;
-  }
-
-  #argentCounter {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    background: #111;
-    padding: 10px 15px;
-    border: 2px solid #3af;
-    font-size: 12px;
-    color: #3af;
-    z-index: 20;
-  }
-
-  #skinCodeBox {
-    margin-top: 10px;
-  }
-
-  #skinCodeInput {
-    width: 90%;
-    padding: 10px;
-    margin-bottom: 10px;
-    font-size: 12px;
-  }
-
-  #skinCodeBox button {
-    padding: 10px;
-    width: 100%;
-    background: #3af;
-    color: #000;
-    border: none;
-    font-weight: bold;
-    cursor: pointer;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <title>kingo</title>
+  <link rel="shortcut icon" href="le logo kingo.png" type="image/x-icon">
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <style>
+    body { font-family: Arial; max-width: 600px; margin: auto; padding: 20px; }
+    input, button { width: 100%; padding: 10px; margin: 10px 0; font-size: 16px; }
+    #status, #searchResult { white-space: pre-wrap; margin-top: 15px; font-weight: bold; }
+  </style>
 </head>
 <body>
 
-<div id="menu">
-  <h1>Block Impostors</h1>
-  <input id="skinCodeInput" placeholder="Code de skin...">
-  <button onclick="verifierCode()">Valider</button>
-  <button id="startBtn">Jouer</button>
-  <button id="optionsBtn">Options</button>
-  <button id="shopBtn">Boutique</button>
-  <button id="discordLogin">Connexion Discord</button>
-  <button id="quitBtn">Quitter</button>
-  <div id="userInfo"></div>
+  <h1>Enregistrer ou chercher un appareil par ID</h1>
 
-  <!-- Champ pour entrer le code secret -->
-  <div id="skinCodeBox">
-    <input type="text" id="skinCodeInput" placeholder="Code secret de skin" />
-    <button onclick="verifierCode()">Valider le code</button>
-  </div>
-</div>
+  <input id="inputId" type="text" placeholder="Entrez votre mot de passe / ID (lettres, chiffres, -, _)" />
+  <button onclick="saveDevice()">Enregistrer mon appareil</button>
+  <div id="status"></div>
 
-<div id="argentCounter">💰 Pièces : <span id="argentValeur">1000</span></div>
+  <hr/>
 
-<div id="boutique">
-  <h2>Boutique</h2>
-  <div class="item">👕 Skin Daquavis — Gratuit <button onclick="acheterItem(0)">Acheter</button></div>
-  <div class="item">🦸 Skin Susy — 200 pièces <button onclick="acheterItem(200)">Acheter</button></div>
-  <div class="item">🎩 Chapeau Ultra — 500 pièces <button onclick="acheterItem(500, 'chapeau-ultra.png')">Acheter</button></div>
-  <div class="item">🎩 Chapeau Ultra — 500 pièces <button onclick="acheterItem(500)">Acheter</button></div>
-  <div class="item">🤠 Chapeau Cowboy — 45 € <button onclick="acheterItem(-1)">Acheter</button></div>
-  <div class="item">🕴️ Costume (apporté par toi-même) — 1000 € <button onclick="acheterItem(-1)">Acheter</button></div>
-</div>
+  <input id="searchId" type="text" placeholder="Rechercher un appareil par ID" />
+  <button onclick="searchDevice()">Rechercher</button>
+  <div id="searchResult"></div>
 
-<canvas id="gameCanvas" width="800" height="600"></canvas>
-
-<script>
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
-
-const player = {
-  x: 100,
-  y: 100,
-  speed: 3,
-  image: new Image(),
-  hatImage: null
-};
-
-const keys = {};
-document.addEventListener("keydown", e => keys[e.key] = true);
-document.addEventListener("keyup", e => keys[e.key] = false);
-
-function movePlayer() {
-  if (keys["ArrowUp"] || keys["z"]) player.y -= player.speed;
-  if (keys["ArrowDown"] || keys["s"]) player.y += player.speed;
-  if (keys["ArrowLeft"] || keys["q"]) player.x -= player.speed;
-  if (keys["ArrowRight"] || keys["d"]) player.x += player.speed;
-}
-
-function gameLoop() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  movePlayer();
-  ctx.drawImage(player.image, player.x, player.y, 48, 64);
-  if (player.hatImage) ctx.drawImage(player.hatImage, player.x, player.y - 32, 48, 32);
-  requestAnimationFrame(gameLoop);
-}
-
-const skinSauvegarde = localStorage.getItem("skinActuel");
-if (skinSauvegarde) player.image.src = skinSauvegarde;
-else player.image.src = "daquavis.png";
-
-const chapeauSauvegarde = localStorage.getItem("chapeauActuel");
-if (chapeauSauvegarde) {
-  player.hatImage = new Image();
-  player.hatImage.src = chapeauSauvegarde;
-}
-
-gameLoop();
-
-function verifierCode() {
-  const code = document.getElementById("skinCodeInput").value.trim().toLowerCase();
-  const codesSkins = {
-    "bird orange": "birdorange.png",
-    "employe2025": "employe_skin.png",
-    "12345": "dream.png"
-  const canvas = document.getElementById("gameCanvas");
-  const ctx = canvas.getContext("2d");
-
-  const player = {
-    x: 100,
-    y: 100,
-    speed: 3,
-    image: new Image()
-  };
-
-  if (code === "ttt") {
-    const chapeauDev = new Image();
-    chapeauDev.src = "chapeau-dev.png";
-    player.hatImage = chapeauDev;
-    localStorage.setItem("chapeauActuel", "chapeau-dev.png");
-    alert("🎩 Chapeau développeur activé !");
-    return;
-  // Appliquer le skin sauvegardé
-  const skinSauvegarde = localStorage.getItem("skinActuel");
-  player.image.src = skinSauvegarde || "daquavis.png";
-
-  const keys = {};
-  document.addEventListener("keydown", e => keys[e.key] = true);
-  document.addEventListener("keyup", e => keys[e.key] = false);
-
-  function movePlayer() {
-    if (keys["ArrowUp"] || keys["z"]) player.y -= player.speed;
-    if (keys["ArrowDown"] || keys["s"]) player.y += player.speed;
-    if (keys["ArrowLeft"] || keys["q"]) player.x -= player.speed;
-    if (keys["ArrowRight"] || keys["d"]) player.x += player.speed;
-  }
-
-  if (codesSkins[code]) {
-    player.image.src = codesSkins[code];
-    localStorage.setItem("skinActuel", codesSkins[code]);
-    alert("✅ Skin activé !");
-  } else {
-    alert("❌ Code inconnu.");
-  function gameLoop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    movePlayer();
-    ctx.drawImage(player.image, player.x, player.y, 48, 64);
-    requestAnimationFrame(gameLoop);
-  }
-}
-
-const menu = document.getElementById('menu');
-const startBtn = document.getElementById('startBtn');
-const shopBtn = document.getElementById('shopBtn');
-const quitBtn = document.getElementById('quitBtn');
-const boutique = document.getElementById('boutique');
-  gameLoop();
-
-startBtn.onclick = () => menu.style.display = 'none';
-shopBtn.onclick = () => boutique.style.display = boutique.style.display === 'none' ? 'block' : 'none';
-quitBtn.onclick = () => alert("Merci d'avoir joué !");
-  const menu = document.getElementById('menu');
-  const startBtn = document.getElementById('startBtn');
-  const optionsBtn = document.getElementById('optionsBtn');
-  const quitBtn = document.getElementById('quitBtn');
-  const shopBtn = document.getElementById('shopBtn');
-  const boutique = document.getElementById('boutique');
-
-  startBtn.addEventListener('click', () => {
-    menu.style.display = 'none';
-  });
-
-  optionsBtn.addEventListener('click', () => {
-    alert('Options à venir...');
-  });
-
-  quitBtn.addEventListener('click', () => {
-    alert('Merci d\'avoir joué !');
-  });
-
-  shopBtn.addEventListener('click', () => {
-    boutique.style.display = boutique.style.display === 'none' ? 'block' : 'none';
-  });
-
-document.getElementById("discordLogin").onclick = () => {
-  const clientId = "1381020944994144286";
-  const redirectUri = window.location.origin + window.location.pathname;
-  const oauthUrl = https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=identify;
-  window.location.href = oauthUrl;
-};
-
-let argent = 1000;
-function majArgent() {
-  document.getElementById("argentValeur").textContent = argent;
-}
-
-function acheterItem(prix, chapeauPath) {
-  if (prix === -1) {
-    alert("Cet objet doit être acheté en dehors du jeu.");
-    return;
-  }
-  if (argent >= prix) {
-    argent -= prix;
-    majArgent();
-    alert("Achat effectué !");
-    if (chapeauPath) {
-      player.hatImage = new Image();
-      player.hatImage.src = chapeauPath;
-      localStorage.setItem("chapeauActuel", chapeauPath);
-
-  document.getElementById("discordLogin").addEventListener("click", () => {
-    window.location.href = oauthUrl;
-  });
-
-  window.addEventListener("load", () => {
-    const hash = window.location.hash;
-    if (hash.includes("access_token")) {
-      const params = new URLSearchParams(hash.substring(1));
-      const accessToken = params.get("access_token");
-
-      fetch("https://discord.com/api/users/@me", {
-        headers: {
-          Authorization: Bearer ${accessToken}
-        }
-      })
-      .then(res => res.json())
-      .then(user => {
-        document.getElementById("userInfo").textContent = Connecté : ${user.username}#${user.discriminator};
-        document.getElementById("discordLogin").style.display = "none";
-      })
-      .catch(err => {
-        console.error("Erreur Discord:", err);
-      });
-    }
-  } else {
-    alert("Pas assez de pièces !");
-  });
-
-  // Gestion argent et achats
-  let argent = 1000;
-
-  function majArgent() {
-    document.getElementById("argentValeur").textContent = argent;
-  }
-}
-
-majArgent();
-  function acheterItem(prix) {
-    if (prix === -1) {
-      alert("Cet objet doit être acheté en dehors du jeu.");
-      return;
-    }
-
-    if (argent >= prix) {
-      argent -= prix;
-      majArgent();
-      alert("Achat effectué !");
-    } else {
-      alert("Pas assez de pièces !");
-    }
-  }
-
-  majArgent();
-
-  // Vérification du code de skin
-  function verifierCode() {
-    const code = document.getElementById("skinCodeInput").value.trim().toLowerCase();
-
-    const codesSkins = {
-      "bird orange": "devlopeur.png",
-      "skin susy": "daquavis.png",
-      "12345": "dream.png"
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyD5N4yMLv5jkj6doGtixAGPOf2Rmvv1NKw",
+      authDomain: "casting-app-bird-orange.firebaseapp.com",
+      databaseURL: "https://casting-app-bird-orange-default-rtdb.firebaseio.com",
+      projectId: "casting-app-bird-orange",
+      storageBucket: "casting-app-bird-orange.firebasestorage.app",
+      messagingSenderId: "1065895542160",
+      appId: "1:1065895542160:web:936a81a69f303fe353c715",
+      measurementId: "G-EDRHNHHS2G"
     };
 
-    if (codesSkins[code]) {
-      const nouveauSkin = codesSkins[code];
-      localStorage.setItem("skinActuel", nouveauSkin);
-      player.image.src = nouveauSkin;
-      alert("✅ Skin activé !");
-    } else {
-      alert("❌ Code inconnu.");
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Valide la clé ID (pas de caractères interdits pour Firebase)
+    function isValidId(id) {
+      return /^[a-zA-Z0-9_-]+$/.test(id);
     }
-  }
-</script>
+
+    function saveDevice() {
+      const id = document.getElementById('inputId').value.trim();
+      const status = document.getElementById('status');
+      if (!id) {
+        status.innerText = "❌ Veuillez entrer un ID.";
+        return;
+      }
+      if (!isValidId(id)) {
+        status.innerText = "❌ ID invalide. Utilisez seulement lettres, chiffres, - ou _";
+        return;
+      }
+
+      const data = {
+        id: id,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent
+      };
+
+      db.ref("devices/" + id).set(data)
+        .then(() => {
+          status.innerText = "✅ Appareil enregistré avec succès !\nID : " + id;
+        })
+        .catch(err => {
+          status.innerText = "Erreur : " + err.message;
+        });
+    }
+
+    function searchDevice() {
+      const id = document.getElementById('searchId').value.trim();
+      const result = document.getElementById('searchResult');
+      if (!id) {
+        result.innerText = "❌ Veuillez entrer un ID à rechercher.";
+        return;
+      }
+      if (!isValidId(id)) {
+        result.innerText = "❌ ID invalide. Utilisez seulement lettres, chiffres, - ou _";
+        return;
+      }
+
+      db.ref("devices/" + id).get()
+        .then(snapshot => {
+          if (snapshot.exists()) {
+            const data = snapshot.val();
+            result.innerText = ✅ Appareil trouvé :\nID : ${data.id}\nEnregistré le : ${data.timestamp}\nNavigateur : ${data.userAgent};
+          } else {
+            result.innerText = "❌ Aucun appareil trouvé avec cet ID.";
+          }
+        })
+        .catch(err => {
+          result.innerText = "Erreur : " + err.message;
+        });
+    }
+  </script>
+
+</body>
+</html>
