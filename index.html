@@ -15,33 +15,16 @@
       color: white;
       overflow: hidden;
     }
-    #menu {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      z-index: 10;
-    }
-    #menu input, #menu button {
-      margin: 5px;
-      padding: 10px;
-      font-family: 'Press Start 2P', cursive;
-      font-size: 12px;
-    }
-    canvas {
-      display: block;
-      margin: 0 auto;
-      background: #111;
-    }
+
+    /* Le reste de ton CSS reste inchangé... */
   </style>
 </head>
 <body>
 
 <div id="menu">
   <h1>Block Impostors</h1>
-  <input id="skinCodeInput" placeholder="Code de skin ou secret...">
-  <button onclick="verifierCode()">Valider le code</button>
+  <input id="skinCodeInput" placeholder="Code de skin..." />
+  <button onclick="verifierCode()">Valider</button>
   <button id="startBtn">Jouer</button>
 </div>
 
@@ -93,103 +76,43 @@
   function verifierCode() {
     const code = document.getElementById("skinCodeInput").value.trim();
 
+    // --- CODE SECRET 232 ---
     if (code === "232") {
-      const dejaKingo = localStorage.getItem("kingoMode") === "true";
-      if (!dejaKingo) {
-        localStorage.setItem("originalHtml", document.documentElement.outerHTML);
+      const kingoActive = localStorage.getItem("kingoMode") === "true";
+      if (!kingoActive) {
         localStorage.setItem("kingoMode", "true");
-        document.open();
-        document.write(`<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8" />
-  <title>kingo</title>
-  <link rel="shortcut icon" href="le logo kingo.png" type="image/x-icon">
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-  <style>
-    body { font-family: Arial; max-width: 600px; margin: auto; padding: 20px; }
-    input, button { width: 100%; padding: 10px; margin: 10px 0; font-size: 16px; }
-    #status, #searchResult { white-space: pre-wrap; margin-top: 15px; font-weight: bold; }
-  </style>
-</head>
-<body>
-  <h1>Enregistrer ou chercher un appareil par ID</h1>
-  <input id="inputId" type="text" placeholder="Entrez votre mot de passe / ID (lettres, chiffres, -, _)" />
-  <button onclick="saveDevice()">Enregistrer mon appareil</button>
-  <div id="status"></div>
-  <hr/>
-  <input id="searchId" type="text" placeholder="Rechercher un appareil par ID" />
-  <button onclick="searchDevice()">Rechercher</button>
-  <div id="searchResult"></div>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyD5N4yMLv5jkj6doGtixAGPOf2Rmvv1NKw",
-      authDomain: "casting-app-bird-orange.firebaseapp.com",
-      databaseURL: "https://casting-app-bird-orange-default-rtdb.firebaseio.com",
-      projectId: "casting-app-bird-orange",
-      storageBucket: "casting-app-bird-orange.firebasestorage.app",
-      messagingSenderId: "1065895542160",
-      appId: "1:1065895542160:web:936a81a69f303fe353c715",
-      measurementId: "G-EDRHNHHS2G"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    function isValidId(id) {
-      return /^[a-zA-Z0-9_-]+$/.test(id);
-    }
-    function saveDevice() {
-      const id = document.getElementById('inputId').value.trim();
-      const status = document.getElementById('status');
-      if (!id) return status.innerText = "❌ Veuillez entrer un ID.";
-      if (!isValidId(id)) return status.innerText = "❌ ID invalide.";
-      const data = { id, timestamp: new Date().toISOString(), userAgent: navigator.userAgent };
-      db.ref("devices/" + id).set(data).then(() => {
-        status.innerText = "✅ Appareil enregistré avec succès !\nID : " + id;
-      }).catch(err => {
-        status.innerText = "Erreur : " + err.message;
-      });
-    }
-    function searchDevice() {
-      const id = document.getElementById('searchId').value.trim();
-      const result = document.getElementById('searchResult');
-      if (!id) return result.innerText = "❌ Veuillez entrer un ID.";
-      if (!isValidId(id)) return result.innerText = "❌ ID invalide.";
-      db.ref("devices/" + id).get().then(snapshot => {
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          result.innerText = `✅ Appareil trouvé :\nID : ${data.id}\nEnregistré le : ${data.timestamp}\nNavigateur : ${data.userAgent}`;
-        } else {
-          result.innerText = "❌ Aucun appareil trouvé avec cet ID.";
-        }
-      }).catch(err => {
-        result.innerText = "Erreur : " + err.message;
-      });
-    }
-  </script>
-</body>
-</html>`);
-        document.close();
+        localStorage.setItem("originalHtml", document.documentElement.outerHTML);
+        fetch("kingo.html")
+          .then(res => res.text())
+          .then(html => {
+            document.open();
+            document.write(html);
+            document.close();
+          });
       } else {
-        const original = localStorage.getItem("originalHtml");
         localStorage.setItem("kingoMode", "false");
-        document.open();
-        document.write(original);
-        document.close();
+        const original = localStorage.getItem("originalHtml");
+        if (original) {
+          document.open();
+          document.write(original);
+          document.close();
+        } else {
+          alert("Code original introuvable.");
+        }
       }
       return;
     }
 
+    // --- SKINS NORMAUX ---
     const codesSkins = {
-      "bird orange": "devlopeur.png",
-      "skin susy": "daquavis.png",
+      "bird orange": "birdorange.png",
+      "employe2025": "employe_skin.png",
       "12345": "dream.png"
     };
 
     if (codesSkins[code]) {
-      const nouveauSkin = codesSkins[code];
-      localStorage.setItem("skinActuel", nouveauSkin);
-      player.image.src = nouveauSkin;
+      player.image.src = codesSkins[code];
+      localStorage.setItem("skinActuel", codesSkins[code]);
       alert("✅ Skin activé !");
     } else {
       alert("❌ Code inconnu.");
@@ -203,3 +126,4 @@
 
 </body>
 </html>
+
